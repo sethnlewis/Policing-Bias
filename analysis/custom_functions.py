@@ -19,40 +19,40 @@ from sklearn.metrics import f1_score, accuracy_score
 
 
 
-class ModelHistory:
-    def __init__(self):
-        self.cols = ['Model', 'n_features', 'CV', 'Features',  'F1 Score', 'Accuracy', 'Notes']
-        self.history = pd.DataFrame(columns = self.cols)
+# class ModelHistory:
+#     def __init__(self):
+#         self.cols = ['Model', 'n_features', 'CV', 'Features',  'F1 Score', 'Accuracy', 'Notes']
+#         self.history = pd.DataFrame(columns = self.cols)
     
-    def add_results(self, model, x, y, cv=False, verbose=False, return_history=False, random_state=None):
-        model_type = str(model)
-        features = x.columns
-        n_features = len(features)        
-        notes = input()
+#     def add_results(self, model, x, y, cv=False, verbose=False, return_history=False, random_state=None):
+#         model_type = str(model)
+#         features = x.columns
+#         n_features = len(features)        
+#         notes = input()
         
-        if cv:
-            kfold = KFold(n_splits=cv, shuffle=True, random_state=random_state)
-            cvs_acc = cross_val_score(model, x, y, cv=kfold, scoring='accuracy')
-            cvs_f1 = cross_val_score(model, x, y, cv=kfold, scoring='f1')  
+#         if cv:
+#             kfold = KFold(n_splits=cv, shuffle=True, random_state=random_state)
+#             cvs_acc = cross_val_score(model, x, y, cv=kfold, scoring='accuracy')
+#             cvs_f1 = cross_val_score(model, x, y, cv=kfold, scoring='f1')  
             
-            acc = cvs_acc.mean()
-            f1 = cvs_f1.mean()
-        else:
-            acc = accuracy_score(y, model.predict(x))
-            f1 = f1_score(y, model.predict(x))
+#             acc = cvs_acc.mean()
+#             f1 = cvs_f1.mean()
+#         else:
+#             acc = accuracy_score(y, model.predict(x))
+#             f1 = f1_score(y, model.predict(x))
 
 
 
-        new_line = [model_type, n_features, cv, features, f1, acc, notes]
-        new_line_df = pd.DataFrame([new_line], columns=self.cols)
+#         new_line = [model_type, n_features, cv, features, f1, acc, notes]
+#         new_line_df = pd.DataFrame([new_line], columns=self.cols)
         
-        self.history = self.history.append([new_line_df])
-        self.history.reset_index(inplace=True, drop=True)
+#         self.history = self.history.append([new_line_df])
+#         self.history.reset_index(inplace=True, drop=True)
         
-        if verbose:
-            display(self.history)
-        if return_history:
-            return self.history
+#         if verbose:
+#             display(self.history)
+#         if return_history:
+#             return self.history
 
         
         
