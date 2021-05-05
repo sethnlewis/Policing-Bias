@@ -54,6 +54,34 @@ class ModelHistory:
         if return_history:
             return self.history
 
+        
+        
+class ModelHistoryV2:
+    def __init__(self):
+        self.cols = ['Model', 'n_features', 'Features', 'F1 Score', 'Accuracy', 'Notes']
+        #self.random_state = random_state
+        self.history = pd.DataFrame(columns = self.cols)
+    
+    def add_model(self, model, x, y, display_results=False, return_history=False, notes=None):
+        model_type = str(model)
+        features = x.columns
+        n_features = len(features)        
+        acc = accuracy_score(y, model.predict(x))
+        f1 = f1_score(y, model.predict(x))
+        
+        if notes == None:
+            notes = input()
+
+        new_line = [model_type, n_features, features, f1, acc, notes]
+        new_line_df = pd.DataFrame([new_line], columns=self.cols)
+        
+        self.history = self.history.append([new_line_df])
+        self.history.reset_index(inplace=True, drop=True)
+        
+        if display_results:
+            display(self.history)
+        if return_history:
+            return self.history
 
 
 
