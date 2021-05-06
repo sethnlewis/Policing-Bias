@@ -18,51 +18,43 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import f1_score, accuracy_score
 
 
-
-# class ModelHistory:
-#     def __init__(self):
-#         self.cols = ['Model', 'n_features', 'CV', 'Features',  'F1 Score', 'Accuracy', 'Notes']
-#         self.history = pd.DataFrame(columns = self.cols)
     
-#     def add_results(self, model, x, y, cv=False, verbose=False, return_history=False, random_state=None):
-#         model_type = str(model)
-#         features = x.columns
-#         n_features = len(features)        
-#         notes = input()
-        
-#         if cv:
-#             kfold = KFold(n_splits=cv, shuffle=True, random_state=random_state)
-#             cvs_acc = cross_val_score(model, x, y, cv=kfold, scoring='accuracy')
-#             cvs_f1 = cross_val_score(model, x, y, cv=kfold, scoring='f1')  
-            
-#             acc = cvs_acc.mean()
-#             f1 = cvs_f1.mean()
-#         else:
-#             acc = accuracy_score(y, model.predict(x))
-#             f1 = f1_score(y, model.predict(x))
+# Andrew's function
+def plot_importances(grid_search, X):
+    best_pipe = grid_search.best_estimator_
 
+    ohe_names = best_pipe[0].transformers_[0][1].\
+                get_feature_names(X.select_dtypes('object').columns)
+    numeric_names = best_pipe[0].transformers_[1][2]
 
+    feature_names = list(ohe_names)+numeric_names
+    importances = best_pipe[2].feature_importances_
+    importances_sorted = sorted(list(zip(feature_names, importances)), key=lambda x: x[1])
 
-#         new_line = [model_type, n_features, cv, features, f1, acc, notes]
-#         new_line_df = pd.DataFrame([new_line], columns=self.cols)
-        
-#         self.history = self.history.append([new_line_df])
-#         self.history.reset_index(inplace=True, drop=True)
-        
-#         if verbose:
-#             display(self.history)
-#         if return_history:
-#             return self.history
+    x = [val[0] for val in importances_sorted]
+    y = [val[1] for val in importances_sorted]
+
+    plt.figure(figsize=(8,12))
+    plt.barh(x, y)
+    plt.xticks(rotation=90);
+
+    
+
+def train_test_scores(grid_search, return_results=False):
+    train_score = grid_search.cv_results_['mean_train_score'].mean() 
+    test_score = grid_search.cv_results_['mean_test_score'].mean()
+    print('Train: {}\nTest: {}'.format(train_score, test_score))
+    if return_results:
+        return train_score, test_score
 
         
         
-class ModelHistoryV2:
+class ModelHistory:
     def __init__(self):
         self.cols = ['Model', 'n_features', 'Features', 'F1 Score', 'Accuracy', 'Notes']
-        #self.random_state = random_state
         self.history = pd.DataFrame(columns = self.cols)
     
-    def add_model(self, model, x, y, display_results=False, return_history=False, notes=None):
+    def add_model(self, model, x, y, display_results=False, notes=None):
         model_type = str(model)
         features = x.columns
         n_features = len(features)        
@@ -80,9 +72,9 @@ class ModelHistoryV2:
         
         if display_results:
             display(self.history)
-        if return_history:
-            return self.history
 
+    def get_results(self):
+        return self.history
 
 
 def bar_plot(data, x_axis, y_axis, agg_type, verbose=False):
