@@ -6,7 +6,7 @@ import os, sys
 
 from custom_functions import *
 from datetime import time
-from sklearn.pipeline import make_pipeline, Pipeline
+from imblearn.pipeline import make_pipeline, Pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.compose import make_column_selector, make_column_transformer
@@ -21,7 +21,10 @@ from sklearn.metrics import f1_score, accuracy_score
     
 # Andrew's function
 def plot_importances(grid_search, X):
-    best_pipe = grid_search.best_estimator_
+    try: 
+        best_pipe = grid_search.best_estimator_
+    except:
+        best_pipe = grid_search
 
     ohe_names = best_pipe[0].transformers_[0][1].\
                 get_feature_names(X.select_dtypes('object').columns)
