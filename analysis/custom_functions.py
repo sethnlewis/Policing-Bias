@@ -132,48 +132,58 @@ def bar_plot(data, x_axis, y_axis, agg_type, verbose=False):
 
 
 
-# IN PROGRESS!!!!!
-def forward_selected(model, data, response):
-    """Linear model designed by forward selection.
 
-    SOURCE: https://planspace.org/20150423-forward_selection_with_statsmodels/
+
+
+
+
+
+# USED EXCLUSIVELY FOR "produce_shap_plot" FUNCTION
+def get_df(df_test, df_train, ohe):
+    df_train_cat = df_train.select_dtypes('object')
+    df_test_cat = df_test.select_dtypes('object')
     
-    Parameters:
-    -----------
-    data : pandas DataFrame with all possible predictors and response
-
-    response: string, name of response column in data
-
-    Returns:
-    --------
-    model: an "optimal" fitted statsmodels linear model
-           with an intercept
-           selected by forward selection
-           evaluated by adjusted R-squared
-    """
-    remaining = set(data.columns)
-    remaining.remove(response)
-    selected = []
-    current_score, best_new_score = 0.0, 0.0
-    while remaining and current_score == best_new_score:
-        scores_with_candidates = []
-        for candidate in remaining:
-            #formula = "{} ~ {} + 1".format(response,
-            #                               ' + '.join(selected + [candidate]))
-            #score = smf.ols(formula, data).fit().rsquared_adj
-            
-            #model = 
-            
-            #score = 
-            
-            scores_with_candidates.append((score, candidate))
-        scores_with_candidates.sort()
-        best_new_score, best_candidate = scores_with_candidates.pop()
-        if current_score < best_new_score:
-            remaining.remove(best_candidate)
-            selected.append(best_candidate)
-            current_score = best_new_score
-    formula = "{} ~ {} + 1".format(response,
-                                   ' + '.join(selected))
-    model = smf.ols(formula, data).fit()
-    return model
+    one_hot_encoder.fit(df_train_cat)
+    df_train_cat_ohe = one_hot_encoder.transform(df_train_cat)
+    df_test_cat_ohe = one_hot_encoder.transform(df_test_cat)
+    
+    df_train_num = df_train.select_dtypes('number')
+    df_test_num = df_test.select_dtypes('number')
+    
+    names_ohe = one_hot_encoder.get_feature_names(df_train_cat[df_train_cat.columns].columns)
+    
+    df_train_expanded = pd.DataFrame(df_train_cat_ohe, columns=names_ohe)
+    df_test_expanded = pd.DataFrame(df_test_cat_ohe, columns=names_ohe)
+    
+    df_train_expanded[df_train_num.columns] = df_train_num
+    df_test_expanded[df_test_num.columns] = df_test_num
+    
+    
+    # Scale dataframe
+    ss = StandardScaler()
+    ss.fit(df_train_expanded)
+    
+    df_train_expanded_scaled = ss.transform(df_train_expanded)
+    df_test_expanded_scaled = ss.transform(df_test_expanded)
+    
+    df_train_expanded_scaled = pd.DataFrame(df_train_expanded_scaled, columns=df_train_expanded.columns)
+    df_test_expanded_scaled = pd.DataFrame(df_test_expanded_scaled, columns=df_test_expanded.columns)
+    
+    return df_train_expanded_scaled, df_test_expanded_scaled
+def produce_shap_plot(df, target, ohe, pipe, df_train_for_fitting_only=False, target_train_for_fitting_only=False):
+    try: 
+        if df_train_for_fitting_only == False:
+            df_train_for_fitting_only = df.copy()
+            target_train_for_fitting_only = target.copy()
+    except:
+        pass
+    
+    df_train, df_test = get_df(df, df_train_for_fitting_only, ohe)
+    
+    model = pipe.steps[1][1]
+    model.fit(df_train, target_train_for_fitting_only)
+    pred = model.predict(df_test, output_margin=True)
+    explainer = shap.TreeExplainer(model)
+    shap_values = explainer.shap_values(df_test)
+    #np.abs(shap_values.sum(1) + explainer.expected_value - pred).max()
+    shap.summary_plot(shap_values, df_test)
