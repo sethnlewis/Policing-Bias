@@ -28,7 +28,7 @@ def plot_importances(grid_search, X):
     numeric_names = best_pipe[0].transformers_[1][2]
 
     feature_names = list(ohe_names)+numeric_names
-    importances = best_pipe[2].feature_importances_
+    importances = best_pipe[1].feature_importances_
     importances_sorted = sorted(list(zip(feature_names, importances)), key=lambda x: x[1])
 
     x = [val[0] for val in importances_sorted]
