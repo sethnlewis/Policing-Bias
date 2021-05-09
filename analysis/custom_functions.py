@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os, sys
+import shap
 
 from custom_functions import *
 from datetime import time
@@ -143,14 +144,14 @@ def get_df(df_test, df_train, ohe):
     df_train_cat = df_train.select_dtypes('object')
     df_test_cat = df_test.select_dtypes('object')
     
-    one_hot_encoder.fit(df_train_cat)
-    df_train_cat_ohe = one_hot_encoder.transform(df_train_cat)
-    df_test_cat_ohe = one_hot_encoder.transform(df_test_cat)
+    ohe.fit(df_train_cat)
+    df_train_cat_ohe = ohe.transform(df_train_cat)
+    df_test_cat_ohe = ohe.transform(df_test_cat)
     
     df_train_num = df_train.select_dtypes('number')
     df_test_num = df_test.select_dtypes('number')
     
-    names_ohe = one_hot_encoder.get_feature_names(df_train_cat[df_train_cat.columns].columns)
+    names_ohe = ohe.get_feature_names(df_train_cat[df_train_cat.columns].columns)
     
     df_train_expanded = pd.DataFrame(df_train_cat_ohe, columns=names_ohe)
     df_test_expanded = pd.DataFrame(df_test_cat_ohe, columns=names_ohe)
@@ -182,7 +183,7 @@ def produce_shap_plot(df, target, ohe, pipe, df_train_for_fitting_only=False, ta
     
     model = pipe.steps[1][1]
     model.fit(df_train, target_train_for_fitting_only)
-    pred = model.predict(df_test, output_margin=True)
+    pred = model.predict(df_test)#, output_margin=True)
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(df_test)
     #np.abs(shap_values.sum(1) + explainer.expected_value - pred).max()
