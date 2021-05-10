@@ -177,9 +177,11 @@ def get_df(df_test, df_train):
 def produce_shap_plot(df, target, pipe, df_train_for_fitting_only=False, target_train_for_fitting_only=False):
     try: 
         if df_train_for_fitting_only == False:
+            print('try')
             df_train_for_fitting_only = df.copy()
             target_train_for_fitting_only = target.copy()
     except:
+        print('pass')
         pass
     
     df_train, df_test = get_df(df, df_train_for_fitting_only)
