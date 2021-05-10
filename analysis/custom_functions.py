@@ -100,7 +100,7 @@ def bar_plot(data, x_axis, y_axis, agg_type, verbose=False):
     if len(y_axis) == 1:
         plt.figure()
         grouped.plot(x=x_axis, kind='barh')
-        plt.title(f'{x_axis} vs. {y_axis} ({agg_type.upper()})', size=15)
+        plt.title(f'{x_axis} vs. {y_axis} ({agg_type.upper()})', size=10)
         plt.show()
     else:
         if len(y_axis) < 4:
