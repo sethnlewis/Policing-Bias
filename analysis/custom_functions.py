@@ -18,7 +18,7 @@ from sklearn.preprocessing import StandardScaler
 
 from sklearn.metrics import f1_score, accuracy_score
 
-
+UNKNOWN = 'Not provided'
     
 # Andrew's function
 def plot_importances(grid_search, X):
@@ -137,13 +137,16 @@ def bar_plot(data, x_axis, y_axis, agg_type, verbose=False):
 
 
 
-
-
-# USED EXCLUSIVELY FOR "produce_shap_plot" FUNCTION
-def get_df(df_test, df_train, ohe):
+# ADAPTED FROM CODE FOUND HERE: https://towardsdatascience.com/explain-any-models-with-the-shap-values-use-the-kernelexplainer-79de9464897a
+def get_df(df_test, df_train):
+    # This function is used exclusively for the "produce_shap_plot" FUNCTION
     df_train_cat = df_train.select_dtypes('object')
     df_test_cat = df_test.select_dtypes('object')
     
+    droppers = [UNKNOWN]*df_train.select_dtypes('object').shape[1]
+    ohe = OneHotEncoder(sparse=False, drop=droppers, handle_unknown='error')
+
+
     ohe.fit(df_train_cat)
     df_train_cat_ohe = ohe.transform(df_train_cat)
     df_test_cat_ohe = ohe.transform(df_test_cat)
@@ -171,7 +174,7 @@ def get_df(df_test, df_train, ohe):
     df_test_expanded_scaled = pd.DataFrame(df_test_expanded_scaled, columns=df_test_expanded.columns)
     
     return df_train_expanded_scaled, df_test_expanded_scaled
-def produce_shap_plot(df, target, ohe, pipe, df_train_for_fitting_only=False, target_train_for_fitting_only=False):
+def produce_shap_plot(df, target, pipe, df_train_for_fitting_only=False, target_train_for_fitting_only=False):
     try: 
         if df_train_for_fitting_only == False:
             df_train_for_fitting_only = df.copy()
@@ -179,12 +182,11 @@ def produce_shap_plot(df, target, ohe, pipe, df_train_for_fitting_only=False, ta
     except:
         pass
     
-    df_train, df_test = get_df(df, df_train_for_fitting_only, ohe)
+    df_train, df_test = get_df(df, df_train_for_fitting_only)
     
     model = pipe.steps[1][1]
     model.fit(df_train, target_train_for_fitting_only)
-    pred = model.predict(df_test)#, output_margin=True)
+    pred = model.predict(df_test, output_margin=True)
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(df_test)
-    #np.abs(shap_values.sum(1) + explainer.expected_value - pred).max()
     shap.summary_plot(shap_values, df_test)
