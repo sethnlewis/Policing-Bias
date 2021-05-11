@@ -139,6 +139,10 @@ def bar_plot(data, x_axis, y_axis, agg_type, verbose=False):
 
 # ADAPTED FROM CODE FOUND HERE: https://towardsdatascience.com/explain-any-models-with-the-shap-values-use-the-kernelexplainer-79de9464897a
 def get_df(df_test, df_train):
+    
+    df_test.reset_index(inplace=True, drop=True)
+    df_train.reset_index(inplace=True, drop=True)
+    
     # This function is used exclusively for the "produce_shap_plot" FUNCTION
     df_train_cat = df_train.select_dtypes('object')
     df_test_cat = df_test.select_dtypes('object')
@@ -162,13 +166,12 @@ def get_df(df_test, df_train):
     df_train_expanded[df_train_num.columns] = df_train_num
     df_test_expanded[df_test_num.columns] = df_test_num
     
-    
     # Scale dataframe
     ss = StandardScaler()
     ss.fit(df_train_expanded)
     
     df_train_expanded_scaled = ss.transform(df_train_expanded)
-    df_test_expanded_scaled = ss.transform(df_test_expanded)
+    df_test_expanded_scaled = ss.transform(df_test_expanded)    
     
     df_train_expanded_scaled = pd.DataFrame(df_train_expanded_scaled, columns=df_train_expanded.columns)
     df_test_expanded_scaled = pd.DataFrame(df_test_expanded_scaled, columns=df_test_expanded.columns)
@@ -177,18 +180,16 @@ def get_df(df_test, df_train):
 def produce_shap_plot(df, target, pipe, df_train_for_fitting_only=False, target_train_for_fitting_only=False):
     try: 
         if df_train_for_fitting_only == False:
-            print('try')
             df_train_for_fitting_only = df.copy()
             target_train_for_fitting_only = target.copy()
     except:
-        print('pass')
         pass
-    
+
     df_train, df_test = get_df(df, df_train_for_fitting_only)
     
     model = pipe.steps[1][1]
     model.fit(df_train, target_train_for_fitting_only)
-    pred = model.predict(df_test, output_margin=True)
+    pred = model.predict(df_test)
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(df_test)
     shap.summary_plot(shap_values, df_test)
