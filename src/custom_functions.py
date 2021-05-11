@@ -5,7 +5,6 @@ import seaborn as sns
 import os, sys
 import shap
 
-from custom_functions import *
 from datetime import time
 from imblearn.pipeline import make_pipeline, Pipeline
 from sklearn.model_selection import train_test_split
@@ -17,6 +16,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 
 from sklearn.metrics import f1_score, accuracy_score
+
+import plotly.figure_factory as ff
+
 
 UNKNOWN = 'Not provided'
     
@@ -177,7 +179,7 @@ def get_df(df_test, df_train):
     df_test_expanded_scaled = pd.DataFrame(df_test_expanded_scaled, columns=df_test_expanded.columns)
     
     return df_train_expanded_scaled, df_test_expanded_scaled
-def produce_shap_plot(df, target, pipe, df_train_for_fitting_only=False, target_train_for_fitting_only=False):
+def produce_shap_plot(df, target, pipe, df_train_for_fitting_only=False, target_train_for_fitting_only=False, savefig=False):
     try: 
         if df_train_for_fitting_only == False:
             df_train_for_fitting_only = df.copy()
@@ -193,3 +195,21 @@ def produce_shap_plot(df, target, pipe, df_train_for_fitting_only=False, target_
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(df_test)
     shap.summary_plot(shap_values, df_test)
+    
+    if savefig:
+        #path_to_figures = os.path.join('..', 'images')
+        name = '../images/SHAP-Plot-Final-Model.png'
+        #path = os.path.join(path_to_figures, name)
+        #fig.savefig(path)
+        plt.savefig('SHAP-Plot-Final-Model.png')
+    
+    
+def save_df_as_img(df, path):
+    fig =  ff.create_table(history_df)
+    fig.update_layout(
+        autosize=False,
+        width=500,
+        height=200,
+    )
+    fig.write_image(path, scale=2)
+    fig.show()
