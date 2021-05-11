@@ -56,14 +56,14 @@ Various different models were tested on the dataset to identify the best perform
 
 
 ## Evaluation
-The below dataframe compares the results of the various above-mentioned models. 
+The below dataframe compares the results of the various above-mentioned models. Note that the bottom two entries correspond to XG Boost models created using *exclusively* racial data in an attempt to isolate the predictive power of race.
 
 ![Model Results DataFrame](./images/Results-DF.png)
 
 
 After studying each option, it was determined that XG Boost was the strongest performing model on the desired F1 scale. As a result, it was selected for use on the test data. The corresponding confusion matrix can be seen below.
 
-![XG Boost Model Confusion Matrix](.images/Final-Model-Confusion-Matrix.png)
+![XG Boost Model Confusion Matrix](./images/Final-Model-Confusion-Matrix.png)
 
 
 Using this model, a SHAP summary plot was created to show the importance and directionality of the most relevant features. It can be seen below. 
@@ -95,7 +95,7 @@ Other interesting trends include:
 - Stops by Hispanic officers are correlated with lower likelihood of a negative subject outcome. 
 
 
-#### Further Investigation
+### Further Investigation
 
 Inevitably, this analysis leaves many valuable insights undiscovered. Further investigation could include areas such as:
 
