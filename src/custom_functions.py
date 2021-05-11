@@ -200,6 +200,8 @@ def produce_shap_plot(df, target, pipe, df_train_for_fitting_only=False, target_
     plt.tight_layout()
     shap.summary_plot(shap_values, df_test, show=False, plot_size=(16, 12))
     plt.tight_layout()
+    plt.title('SHAP Summary Plot for Final Model',
+             fontdict={'fontsize': 18})
     
     if savefig:
         path_to_figures = os.path.join('..', 'images')
