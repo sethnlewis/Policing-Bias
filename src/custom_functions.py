@@ -189,27 +189,20 @@ def produce_shap_plot(df, target, pipe, df_train_for_fitting_only=False, target_
 
     df_train, df_test = get_df(df, df_train_for_fitting_only)
     
+    plt.figure()
+    
+    
     model = pipe.steps[1][1]
     model.fit(df_train, target_train_for_fitting_only)
     pred = model.predict(df_test)
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(df_test)
-    shap.summary_plot(shap_values, df_test)
+    plt.tight_layout()
+    shap.summary_plot(shap_values, df_test, show=False, plot_size=(16, 12))
+    plt.tight_layout()
     
     if savefig:
-        #path_to_figures = os.path.join('..', 'images')
+        path_to_figures = os.path.join('..', 'images')
         name = '../images/SHAP-Plot-Final-Model.png'
-        #path = os.path.join(path_to_figures, name)
-        #fig.savefig(path)
-        plt.savefig('SHAP-Plot-Final-Model.png')
-    
-    
-def save_df_as_img(df, path):
-    fig =  ff.create_table(history_df)
-    fig.update_layout(
-        autosize=False,
-        width=500,
-        height=200,
-    )
-    fig.write_image(path, scale=2)
-    fig.show()
+        path = os.path.join(path_to_figures, name)
+        plt.savefig(path)
