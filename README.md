@@ -56,7 +56,7 @@ Various different models were tested on the dataset to identify the best perform
 
 
 ## Evaluation
-The below dataframe compares the results of the various above-mentioned models. Note that the bottom two entries correspond to XG Boost models created using *exclusively* racial data in an attempt to isolate the predictive power of race.
+The below dataframe compares the results of the various above-mentioned models. Note that the bottom two entries correspond to XG Boost models created using *exclusively* racial data in an attempt to isolate the predictive power of race. Refer to the full Jupyter notebook for further details and exploration.
 
 ![Model Results DataFrame](./images/Results-DF.png)
 
@@ -95,7 +95,7 @@ Other interesting trends include:
 - Stops by Hispanic officers are correlated with lower likelihood of a negative subject outcome. 
 
 
-### Further Investigation
+## Further Investigation
 
 Inevitably, this analysis leaves many valuable insights undiscovered. Further investigation could include areas such as:
 
