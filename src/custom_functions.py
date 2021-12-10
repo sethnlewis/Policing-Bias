@@ -179,6 +179,7 @@ def get_df(df_test, df_train):
     df_test_expanded_scaled = pd.DataFrame(df_test_expanded_scaled, columns=df_test_expanded.columns)
     
     return df_train_expanded_scaled, df_test_expanded_scaled
+
 def produce_shap_plot(df, target, pipe, df_train_for_fitting_only=False, target_train_for_fitting_only=False, savefig=False):
     try: 
         if df_train_for_fitting_only == False:
