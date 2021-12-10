@@ -1,4 +1,4 @@
-# Police Data Analysis: Terry Stops in Seattle
+# Policing Bias: An Analysis of Law Enforcement Records
 
 ## Introduction
 This analysis seeks to add understanding to data regarding police interactions known as Terry stops. According to [Merriam-Webster](https://www.merriam-webster.com/legal/Terry%20stop), a Terry stop is "a stop and limited search of a person for weapons justified by a police officer's reasonable conclusion that a crime is being or about to be committed by a person who may be armed and whose responses to questioning do not dispel the officer's fear of danger to the officer or to others." This type of interaction will be analyzed in depth.
